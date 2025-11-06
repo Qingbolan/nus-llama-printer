@@ -77,6 +77,29 @@ npm run dev
 
 This uses nodemon for automatic server restart on file changes.
 
+### Environment Configuration
+
+Copy `.env.example` to `.env` and configure:
+
+```bash
+cp .env.example .env
+```
+
+Generate a secure session secret:
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+### Production Deployment
+
+For production deployment:
+
+1. Set `NODE_ENV=production` in your environment
+2. Generate and set a secure `SESSION_SECRET`
+3. Consider adding rate limiting middleware (e.g., `express-rate-limit`)
+4. Use HTTPS/SSL for secure connections
+5. Ensure server is accessible to NUS network or use VPN
+
 ### Project Structure
 ```
 nus-llama-printer/
