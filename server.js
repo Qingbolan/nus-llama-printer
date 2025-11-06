@@ -13,14 +13,25 @@ const PORT = process.env.PORT || 3000;
 // Configure multer for file uploads
 const upload = multer({ 
   dest: 'uploads/',
-  limits: { fileSize: 50 * 1024 * 1024 } // 50MB limit
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit
+  fileFilter: (req, file, cb) => {
+    // Only accept PDF files
+    if (file.mimetype === 'application/pdf') {
+      cb(null, true);
+    } else {
+      cb(new Error('Only PDF files are allowed'));
+    }
+  }
 });
 
 // Middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'nus-llama-printer-secret',
+  secret: process.env.SESSION_SECRET || (() => {
+    console.warn('WARNING: Using default session secret. Set SESSION_SECRET environment variable for production!');
+    return require('crypto').randomBytes(32).toString('hex');
+  })(),
   resave: false,
   saveUninitialized: false,
   cookie: { maxAge: 3600000 } // 1 hour
@@ -31,6 +42,10 @@ app.use(express.static('public'));
 if (!fs.existsSync('uploads')) {
   fs.mkdirSync('uploads');
 }
+
+// A4 page dimensions in points (72 points = 1 inch)
+const A4_LANDSCAPE_WIDTH = 841.89;  // 297mm in points
+const A4_LANDSCAPE_HEIGHT = 595.28; // 210mm in points
 
 // Booklet layout generator
 function generateBookletLayout(totalPages) {
@@ -79,7 +94,7 @@ async function processPDFForBooklet(inputPath, outputPath) {
     // Create booklet pages
     for (const sheet of bookletInfo.layout) {
       // Front page (2 pages side by side)
-      const frontPage = newPdfDoc.addPage([841.89, 595.28]); // A4 landscape
+      const frontPage = newPdfDoc.addPage([A4_LANDSCAPE_WIDTH, A4_LANDSCAPE_HEIGHT]);
       
       // Add front-left page
       if (sheet.front[0] <= totalPages) {
@@ -87,7 +102,7 @@ async function processPDFForBooklet(inputPath, outputPath) {
         const { width, height } = leftPage.getSize();
         frontPage.drawPage(leftPage, {
           x: 0,
-          y: (595.28 - height) / 2,
+          y: (A4_LANDSCAPE_HEIGHT - height) / 2,
           width: width / 2,
           height: height / 2
         });
@@ -98,15 +113,15 @@ async function processPDFForBooklet(inputPath, outputPath) {
         const [rightPage] = await newPdfDoc.copyPages(pdfDoc, [sheet.front[1] - 1]);
         const { width, height } = rightPage.getSize();
         frontPage.drawPage(rightPage, {
-          x: 841.89 / 2,
-          y: (595.28 - height) / 2,
+          x: A4_LANDSCAPE_WIDTH / 2,
+          y: (A4_LANDSCAPE_HEIGHT - height) / 2,
           width: width / 2,
           height: height / 2
         });
       }
       
       // Back page (2 pages side by side)
-      const backPage = newPdfDoc.addPage([841.89, 595.28]); // A4 landscape
+      const backPage = newPdfDoc.addPage([A4_LANDSCAPE_WIDTH, A4_LANDSCAPE_HEIGHT]);
       
       // Add back-left page
       if (sheet.back[0] <= totalPages) {
@@ -114,7 +129,7 @@ async function processPDFForBooklet(inputPath, outputPath) {
         const { width, height } = leftPage.getSize();
         backPage.drawPage(leftPage, {
           x: 0,
-          y: (595.28 - height) / 2,
+          y: (A4_LANDSCAPE_HEIGHT - height) / 2,
           width: width / 2,
           height: height / 2
         });
@@ -125,8 +140,8 @@ async function processPDFForBooklet(inputPath, outputPath) {
         const [rightPage] = await newPdfDoc.copyPages(pdfDoc, [sheet.back[1] - 1]);
         const { width, height } = rightPage.getSize();
         backPage.drawPage(rightPage, {
-          x: 841.89 / 2,
-          y: (595.28 - height) / 2,
+          x: A4_LANDSCAPE_WIDTH / 2,
+          y: (A4_LANDSCAPE_HEIGHT - height) / 2,
           width: width / 2,
           height: height / 2
         });
@@ -148,8 +163,10 @@ function submitPrintJob(host, username, password, filePath, printerOptions) {
     const conn = new Client();
     
     conn.on('ready', () => {
-      const remoteFileName = path.basename(filePath);
-      const remotePath = `/tmp/${remoteFileName}`;
+      // Generate a safe remote filename with timestamp
+      const timestamp = Date.now();
+      const safeFileName = `print_job_${timestamp}.pdf`;
+      const remotePath = `/tmp/${safeFileName}`;
       
       conn.sftp((err, sftp) => {
         if (err) {
@@ -164,8 +181,18 @@ function submitPrintJob(host, username, password, filePath, printerOptions) {
             return reject(err);
           }
           
-          // Execute print command
-          const printCmd = `lpr ${printerOptions.duplex ? '-o sides=two-sided-long-edge' : ''} ${printerOptions.copies > 1 ? `-#${printerOptions.copies}` : ''} "${remotePath}" && rm "${remotePath}"`;
+          // Execute print command with properly escaped arguments
+          // Using array form to avoid shell injection
+          const printArgs = [];
+          if (printerOptions.duplex) {
+            printArgs.push('-o', 'sides=two-sided-long-edge');
+          }
+          if (printerOptions.copies > 1) {
+            printArgs.push(`-#${printerOptions.copies}`);
+          }
+          printArgs.push(remotePath);
+          
+          const printCmd = `lpr ${printArgs.join(' ')} && rm "${remotePath}"`;
           
           conn.exec(printCmd, (err, stream) => {
             if (err) {
@@ -248,6 +275,24 @@ app.post('/api/submit-job', upload.single('file'), async (req, res) => {
     if (!server || !username || !password) {
       fs.unlinkSync(req.file.path);
       return res.status(400).json({ error: 'Missing required fields' });
+    }
+    
+    // Validate username format (alphanumeric and underscore, 3-20 chars)
+    if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
+      fs.unlinkSync(req.file.path);
+      return res.status(400).json({ error: 'Invalid username format. Use alphanumeric characters only (3-20 characters)' });
+    }
+    
+    // Validate password length (minimum 6 characters)
+    if (password.length < 6 || password.length > 100) {
+      fs.unlinkSync(req.file.path);
+      return res.status(400).json({ error: 'Password must be between 6 and 100 characters' });
+    }
+    
+    // Validate server selection
+    if (server !== 'stu' && server !== 'stf') {
+      fs.unlinkSync(req.file.path);
+      return res.status(400).json({ error: 'Invalid server selection' });
     }
     
     // Determine server host
