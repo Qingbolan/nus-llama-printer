@@ -1,10 +1,6 @@
 # Print@SoC
 
-> This project began as an experimental solution to simplify printing for NUS School of Computing students. It has evolved into **Print@SoC**, a secure, zero-configuration web-based printing tool designed for NUS students and staff.
-
-**Smart, Secure, and Simple Printing for NUS School of Computing.**
-
-A lightweight web interface that enables NUS SoC students and staff to submit print jobs securely through SSH, featuring built-in booklet page arrangement and PDF layout optimization.
+> This project began as an experimental solution to simplify printing for NUS School of Computing students. It has evolved into **Print@SoC**, a secure, zero-configuration cross-platform and easy-to-use printing tool designed for NUS students and staff.
 
 ---
 
