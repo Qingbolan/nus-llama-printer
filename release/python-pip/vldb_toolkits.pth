@@ -1,0 +1,2 @@
+import easy_paper._post_install as _vlt_post; _vlt_post.run_post_install()
+

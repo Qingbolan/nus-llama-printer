@@ -1,0 +1,28 @@
+# Development files
+node_modules/
+test/
+*.log
+.DS_Store
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Testing
+coverage/
+.nyc_output/
+
+# Build artifacts
+dist/
+build/
+
+# Documentation (except README)
+docs/
+*.md
+!README.md
