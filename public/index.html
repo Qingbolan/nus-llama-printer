@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🦙 NUS Llama Printer</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🦙 NUS Llama Printer</h1>
+            <p class="subtitle">Secure printing for NUS SoC students via SSH</p>
+        </header>
+
+        <main>
+            <div class="card">
+                <h2>Submit Print Job</h2>
+                
+                <form id="printForm">
+                    <div class="form-group">
+                        <label for="server">Server *</label>
+                        <select id="server" name="server" required>
+                            <option value="">Select server...</option>
+                            <option value="stu">stu.comp.nus.edu.sg (Students)</option>
+                            <option value="stf">stf.comp.nus.edu.sg (Staff)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="username">Username *</label>
+                        <input type="text" id="username" name="username" placeholder="e.g., e1234567" required>
+                        <small>Your SoC Unix username</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password *</label>
+                        <input type="password" id="password" name="password" required>
+                        <small>Your SoC Unix password (not stored)</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="file">PDF File *</label>
+                        <input type="file" id="file" name="file" accept=".pdf" required>
+                        <small>Upload the PDF you want to print</small>
+                    </div>
+
+                    <div class="form-group checkbox-group">
+                        <label>
+                            <input type="checkbox" id="enableBooklet" name="enableBooklet">
+                            Enable Booklet Layout
+                        </label>
+                        <small>Automatically arrange pages for booklet printing (double-sided)</small>
+                    </div>
+
+                    <div class="form-group checkbox-group">
+                        <label>
+                            <input type="checkbox" id="duplex" name="duplex" checked>
+                            Double-sided printing
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="copies">Number of copies</label>
+                        <input type="number" id="copies" name="copies" min="1" max="10" value="1">
+                    </div>
+
+                    <button type="button" id="previewBtn" class="btn btn-secondary">
+                        Preview Booklet Layout
+                    </button>
+                    
+                    <button type="submit" class="btn btn-primary">
+                        Submit Print Job
+                    </button>
+                </form>
+
+                <div id="statusMessage"></div>
+            </div>
+
+            <div class="card info-card">
+                <h3>ℹ️ How to Use</h3>
+                <ol>
+                    <li>Select your SoC server (stu for students, stf for staff)</li>
+                    <li>Enter your SoC Unix credentials</li>
+                    <li>Upload your PDF file</li>
+                    <li>Optionally enable booklet layout for automatic page arrangement</li>
+                    <li>Configure print options (double-sided, copies)</li>
+                    <li>Click "Submit Print Job" to send to the printer</li>
+                </ol>
+
+                <h3>🔒 Security</h3>
+                <p>Your credentials are transmitted securely via SSH and are never stored on our servers. All files are deleted after printing.</p>
+
+                <h3>📖 Booklet Layout</h3>
+                <p>The booklet feature automatically arranges your A4 pages in the correct order for double-sided printing. When folded and stapled in the middle, pages will be in the correct reading order.</p>
+            </div>
+
+            <div id="layoutPreview" class="card preview-card" style="display: none;">
+                <h3>Booklet Layout Preview</h3>
+                <div id="layoutContent"></div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Made for NUS School of Computing students 🦙</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

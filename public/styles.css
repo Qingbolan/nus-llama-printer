@@ -1,0 +1,294 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+    color: #333;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+header {
+    text-align: center;
+    color: white;
+    margin-bottom: 30px;
+    padding: 20px;
+}
+
+header h1 {
+    font-size: 3em;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+}
+
+.subtitle {
+    font-size: 1.2em;
+    opacity: 0.9;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.card h2 {
+    margin-bottom: 25px;
+    color: #667eea;
+}
+
+.card h3 {
+    margin-bottom: 15px;
+    color: #667eea;
+    margin-top: 20px;
+}
+
+.card h3:first-child {
+    margin-top: 0;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #555;
+}
+
+.form-group input[type="text"],
+.form-group input[type="password"],
+.form-group input[type="number"],
+.form-group select {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="password"]:focus,
+.form-group input[type="number"]:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.form-group input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    border: 2px dashed #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.form-group small {
+    display: block;
+    margin-top: 5px;
+    color: #777;
+    font-size: 0.9em;
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+}
+
+.checkbox-group label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0;
+    cursor: pointer;
+}
+
+.checkbox-group input[type="checkbox"] {
+    margin-right: 10px;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.btn {
+    padding: 14px 28px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-right: 10px;
+    margin-top: 10px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-secondary {
+    background: #f0f0f0;
+    color: #333;
+}
+
+.btn-secondary:hover {
+    background: #e0e0e0;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+#statusMessage {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 8px;
+    display: none;
+}
+
+#statusMessage.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+    display: block;
+}
+
+#statusMessage.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    display: block;
+}
+
+#statusMessage.info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+    display: block;
+}
+
+.info-card {
+    background: #f8f9fa;
+}
+
+.info-card ol {
+    margin-left: 20px;
+    margin-top: 10px;
+}
+
+.info-card li {
+    margin-bottom: 8px;
+    line-height: 1.6;
+}
+
+.info-card p {
+    line-height: 1.6;
+    margin-top: 10px;
+}
+
+.preview-card {
+    background: #f8f9fa;
+}
+
+#layoutContent {
+    margin-top: 15px;
+}
+
+.layout-sheet {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: white;
+    border-radius: 8px;
+    border: 2px solid #e0e0e0;
+}
+
+.layout-sheet h4 {
+    color: #667eea;
+    margin-bottom: 10px;
+}
+
+.layout-pages {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.layout-side {
+    flex: 1;
+    padding: 10px;
+    background: #f0f0f0;
+    border-radius: 5px;
+}
+
+.layout-side strong {
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+.page-numbers {
+    display: flex;
+    gap: 5px;
+}
+
+.page-number {
+    padding: 8px 12px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-align: center;
+    min-width: 40px;
+}
+
+.page-number.blank {
+    background: #ffeeee;
+    color: #999;
+}
+
+footer {
+    text-align: center;
+    color: white;
+    margin-top: 30px;
+    padding: 20px;
+    opacity: 0.8;
+}
+
+@media (max-width: 600px) {
+    header h1 {
+        font-size: 2em;
+    }
+    
+    .card {
+        padding: 20px;
+    }
+    
+    .btn {
+        width: 100%;
+        margin-right: 0;
+    }
+}
