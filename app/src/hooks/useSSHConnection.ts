@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 import { usePrinterStore } from '@/store/printer-store'
-import { testSSHConnection } from '@/lib/printer-api'
+import { connectSSH, disconnectSSH } from '@/lib/printer-api'
 import type { SSHConfig } from '@/types/printer'
 
 const MAX_RETRIES = 3
@@ -45,8 +45,8 @@ export function useSSHConnection() {
             elapsedSeconds: Math.floor((Date.now() - startTime) / 1000),
           })
 
-          // Try to connect
-          const result = await testSSHConnection(config)
+          // Try to establish persistent connection
+          const result = await connectSSH(config)
 
           if (result.success) {
             clearInterval(timerInterval)
@@ -97,9 +97,16 @@ export function useSSHConnection() {
     }
   }, [setConnectionStatus, setIsConnected])
 
-  const disconnect = useCallback(() => {
-    setConnectionStatus({ type: 'disconnected' })
-    setIsConnected(false)
+  const disconnect = useCallback(async () => {
+    try {
+      await disconnectSSH()
+      setConnectionStatus({ type: 'disconnected' })
+      setIsConnected(false)
+      return { success: true }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to disconnect'
+      return { success: false, error: errorMessage }
+    }
   }, [setConnectionStatus, setIsConnected])
 
   return {

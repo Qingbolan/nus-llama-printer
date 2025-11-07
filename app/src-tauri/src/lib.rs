@@ -5,7 +5,10 @@ mod pdf_service;
 mod print_service;
 
 // Import commands
-use ssh_service::{ssh_test_connection, ssh_execute_command, ssh_upload_file, ssh_check_printer_queue};
+use ssh_service::{
+    ssh_connect, ssh_disconnect, ssh_connection_status,
+    ssh_test_connection, ssh_execute_command, ssh_upload_file, ssh_check_printer_queue
+};
 use pdf_service::{pdf_get_info, pdf_generate_booklet_layout, pdf_create_booklet, pdf_create_nup};
 use print_service::{
     print_create_job, print_get_all_jobs, print_get_job, print_update_job_status,
@@ -24,6 +27,9 @@ pub fn run() {
         .plugin(tauri_plugin_fs::init())
         .invoke_handler(tauri::generate_handler![
             // SSH operations
+            ssh_connect,
+            ssh_disconnect,
+            ssh_connection_status,
             ssh_test_connection,
             ssh_execute_command,
             ssh_upload_file,

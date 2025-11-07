@@ -11,6 +11,21 @@ import type {
 } from '@/types/printer'
 
 // ========== SSH Operations ==========
+
+// Persistent SSH Connection Management
+export async function connectSSH(config: SSHConfig): Promise<ApiResponse<string>> {
+  return await safeInvoke('ssh_connect', { config })
+}
+
+export async function disconnectSSH(): Promise<ApiResponse<string>> {
+  return await safeInvoke('ssh_disconnect')
+}
+
+export async function getSSHConnectionStatus(): Promise<ApiResponse<boolean>> {
+  return await safeInvoke('ssh_connection_status')
+}
+
+// Regular SSH operations (will use persistent connection if available)
 export async function testSSHConnection(config: SSHConfig): Promise<ApiResponse<string>> {
   return await safeInvoke('ssh_test_connection', { config })
 }
